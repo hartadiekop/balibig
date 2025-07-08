@@ -169,7 +169,41 @@
 
     animate();
   </script>
-
+  <!-- Modal -->
+  <div class="modal fade" id="learnMoreModal" tabindex="-1" aria-labelledby="learnMoreModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-light">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="learnMoreModalLabel"><i class="fa-solid fa-circle-info me-2"></i>About Silicon Bali</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Silicon Bali is a community-driven initiative to foster technology, innovation, and collaboration in the heart of Bali. We connect digital professionals, entrepreneurs, and enthusiasts to create a vibrant tech ecosystem on the island.
+          </p>
+          <ul>
+            <li>Networking events & meetups</li>
+            <li>Workshops & learning sessions</li>
+            <li>Startup support & mentorship</li>
+          </ul>
+          <p class="mb-0">Join us and be part of Bali's digital future!</p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-custom" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Attach modal trigger to Learn More button
+    document.addEventListener('DOMContentLoaded', function() {
+      const learnMoreBtn = document.querySelector('a.btn-outline-light[href="#"]');
+      if (learnMoreBtn) {
+        learnMoreBtn.setAttribute('data-bs-toggle', 'modal');
+        learnMoreBtn.setAttribute('data-bs-target', '#learnMoreModal');
+      }
+    });
+  </script>
   <div class="main-content text-center container">
     <i class="fa-solid fa-microchip brand-icon"></i>
     <h1 class="display-3 fw-bold mb-3">Silicon Bali</h1>
