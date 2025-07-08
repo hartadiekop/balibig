@@ -49,17 +49,6 @@
       background: linear-gradient(90deg, #6610f2 0%, #0dcaf0 100%);
       color: #fff;
     }
-    /* Polygon animation keyframes */
-    .poly {
-      stroke-dasharray: 1000;
-      stroke-dashoffset: 1000;
-      animation: draw 3s forwards;
-    }
-    @keyframes draw {
-      to {
-        stroke-dashoffset: 0;
-      }
-    }
     /* Responsive text */
     @media (max-width: 600px) {
       .display-3 { font-size: 2.2rem; }
@@ -68,27 +57,118 @@
   </style>
 </head>
 <body>
-  <!-- Futuristic polygon background (SVG silhouette of Bali with polygons) -->
-  <svg class="bg-anim" viewBox="0 0 1200 800" fill="none">
-    <!-- Silhouette of Bali (approximate, stylized) -->
-    <polygon class="poly" points="300,400 350,350 500,320 700,340 900,400 850,500 700,600 500,650 350,600 320,500" stroke="#0dcaf0" stroke-width="3" fill="none"/>
-    <!-- Futuristic polygons inside silhouette -->
-    <polyline class="poly" points="350,350 500,400 700,340" stroke="#6610f2" stroke-width="2" fill="none"/>
-    <polyline class="poly" points="500,320 500,400 500,650" stroke="#0dcaf0" stroke-width="2" fill="none"/>
-    <polyline class="poly" points="700,340 700,600 500,650" stroke="#6610f2" stroke-width="2" fill="none"/>
-    <polyline class="poly" points="350,600 500,400 850,500" stroke="#0dcaf0" stroke-width="2" fill="none"/>
-    <circle class="poly" cx="600" cy="480" r="40" stroke="#0dcaf0" stroke-width="2" fill="none"/>
-    <!-- Random glowing dots -->
-    <circle cx="400" cy="450" r="4" fill="#0dcaf0" opacity="0.7">
-      <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
-    </circle>
-    <circle cx="700" cy="500" r="3" fill="#6610f2" opacity="0.7">
-      <animate attributeName="opacity" values="0.7;0.2;0.7" dur="1.5s" repeatCount="indefinite"/>
-    </circle>
-    <circle cx="600" cy="600" r="2.5" fill="#0dcaf0" opacity="0.7">
-      <animate attributeName="opacity" values="0.7;0.2;0.7" dur="1.2s" repeatCount="indefinite"/>
-    </circle>
-  </svg>
+  <!-- Futuristic constellation background (SVG + JS for animation) -->
+  <svg id="constellation-bg" class="bg-anim" viewBox="0 0 1200 800" fill="none"></svg>
+  <script>
+    // --- Constellation Animation ---
+    const svg = document.getElementById('constellation-bg');
+    const width = 1200, height = 800;
+    const POINTS = 18;
+    const RADIUS = 250;
+    const CENTER = { x: 600, y: 420 };
+    const DOT_MIN = 2, DOT_MAX = 5;
+    const SPEED = 0.6 + Math.random() * 0.4;
+
+    // Generate points in a "Bali" silhouette area (approximate ellipse)
+    let stars = [];
+    for (let i = 0; i < POINTS; i++) {
+      const angle = (Math.PI * 2 * i) / POINTS + Math.random() * 0.2;
+      const rx = RADIUS * (0.8 + Math.random() * 0.4);
+      const ry = RADIUS * (0.5 + Math.random() * 0.7);
+      stars.push({
+        base: {
+          x: CENTER.x + Math.cos(angle) * rx,
+          y: CENTER.y + Math.sin(angle) * ry
+        },
+        phase: Math.random() * Math.PI * 2,
+        r: DOT_MIN + Math.random() * (DOT_MAX - DOT_MIN)
+      });
+    }
+
+    // Connect each star to its 2 nearest neighbors
+    function getLinks(stars) {
+      let links = [];
+      for (let i = 0; i < stars.length; i++) {
+        let dists = [];
+        for (let j = 0; j < stars.length; j++) {
+          if (i !== j) {
+            const dx = stars[i].base.x - stars[j].base.x;
+            const dy = stars[i].base.y - stars[j].base.y;
+            dists.push({ j, dist: dx * dx + dy * dy });
+          }
+        }
+        dists.sort((a, b) => a.dist - b.dist);
+        links.push([i, dists[0].j]);
+        links.push([i, dists[1].j]);
+      }
+      // Remove duplicate links
+      const unique = {};
+      links.forEach(([a, b]) => {
+        const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+        unique[key] = [a, b];
+      });
+      return Object.values(unique);
+    }
+    const links = getLinks(stars);
+
+    // Animation loop
+    function animate() {
+      svg.innerHTML = '';
+      const t = Date.now() * 0.001 * SPEED;
+      // Animate stars in/out with a subtle orbit
+      const animStars = stars.map((star, i) => {
+        const orbit = 12 + 8 * Math.sin(t + star.phase + i);
+        const angle = Math.atan2(star.base.y - CENTER.y, star.base.x - CENTER.x) + 0.15 * Math.sin(t + i);
+        return {
+          x: CENTER.x + Math.cos(angle) * (Math.hypot(star.base.x - CENTER.x, star.base.y - CENTER.y) + orbit * Math.sin(t + star.phase)),
+          y: CENTER.y + Math.sin(angle) * (Math.hypot(star.base.x - CENTER.x, star.base.y - CENTER.y) + orbit * Math.cos(t + star.phase)),
+          r: star.r + 1.5 * Math.sin(t * 1.5 + i)
+        };
+      });
+
+      // Draw links
+      links.forEach(([a, b]) => {
+        const s1 = animStars[a], s2 = animStars[b];
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', s1.x); line.setAttribute('y1', s1.y);
+        line.setAttribute('x2', s2.x); line.setAttribute('y2', s2.y);
+        line.setAttribute('stroke', '#0dcaf0');
+        line.setAttribute('stroke-width', '1.5');
+        line.setAttribute('opacity', '0.35');
+        line.setAttribute('filter', 'url(#glow)');
+        svg.appendChild(line);
+      });
+
+      // Draw stars
+      animStars.forEach((s, i) => {
+        const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        dot.setAttribute('cx', s.x);
+        dot.setAttribute('cy', s.y);
+        dot.setAttribute('r', Math.abs(s.r));
+        dot.setAttribute('fill', i % 3 === 0 ? '#6610f2' : '#0dcaf0');
+        dot.setAttribute('opacity', '0.8');
+        dot.setAttribute('filter', 'url(#glow)');
+        svg.appendChild(dot);
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    // SVG filter for glow effect
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    defs.innerHTML = `
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    `;
+    svg.appendChild(defs);
+
+    animate();
+  </script>
 
   <div class="main-content text-center container">
     <i class="fa-solid fa-microchip brand-icon"></i>
