@@ -207,6 +207,36 @@
       }
     });
   </script>
+  <div class="modal fade" id="getStartedModal" tabindex="-1" aria-labelledby="getStartedModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content bg-dark text-light">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="getStartedModalLabel"><i class="fa-solid fa-circle-info me-2"></i>Get Started</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            We're still in the early stages of building Silicon Bali. Our goal is to create a thriving tech community that connects local talent with global opportunities. We invite you to join us on this journey as we develop programs, events, and resources to empower Bali's digital ecosystem.
+          </p>
+          <p class="mb-0">Send us email : <i>partner@siliconbali.org</i></p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-custom" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Attach modal trigger to Get Started button
+    document.addEventListener('DOMContentLoaded', function() {
+      const getStartedBtn = document.querySelector('a.btn-custom[href="#"]');
+      if (getStartedBtn) {
+        getStartedBtn.setAttribute('data-bs-toggle', 'modal');
+        getStartedBtn.setAttribute('data-bs-target', '#getStartedModal');
+      }
+    });
+  </script>
+
   <div class="main-content text-center container">
     <i class="fa-solid fa-microchip brand-icon"></i>
     <h1 class="display-3 fw-bold mb-3">Silicon Bali</h1>
@@ -215,8 +245,8 @@
       Join the digital revolution in the heart of Bali.
     </p>
     <div class="mb-4">
-      <a href="#" class="btn btn-custom btn-lg me-2"><i class="fa-brands fa-rocket"></i> Get Started</a>
-      <a href="#" class="btn btn-outline-light btn-lg"><i class="fa-solid fa-circle-info"></i> Learn More</a>
+      <a href="#" class="btn btn-custom btn-lg me-2" id="btn-getStartedBtn"><i class="fa-brands fa-rocket"></i> Get Started</a>
+      <a href="#" class="btn btn-outline-light btn-lg" id="btn-learnMoreBtn><i class="fa-solid fa-circle-info"></i> Learn More</a>
     </div>
     <div class="d-flex justify-content-center gap-4 mt-4">
       <a href="#" class="text-info fs-3"><i class="fa-brands fa-twitter"></i></a>
